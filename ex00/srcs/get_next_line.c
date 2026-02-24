@@ -40,8 +40,8 @@ static char	*join_res(char **dst, char *src)
 	size_t	len;
 	char	*res;
 
-	if (ft_strchr(src, '\n'))
-		*ft_strchr(src, '\n') = '\0';
+	if (ft_memchr(src, '\n'))
+		*ft_memchr(src, '\n') = '\0';
 	len = ft_strlen(src);
 	if (*dst)
 		len += ft_strlen(*dst);
@@ -72,17 +72,17 @@ char	*get_next_line(int fd)
 	while (0 <= fd && fd < FD_MAX && get_fd_buf(fd, FD_BUF_ALLOC))
 	{
 		ft_memset(src, '\0', BUFFER_SIZE + 1);
-		if (get_fd_buf(fd, FD_BUF_RDONLY) == '\0')
-			rlen = read(fd, src, BUFFER_SIZE);
+		if (*get_fd_buf(fd, FD_BUF_RDONLY) == '\0')
+			rlen = read(fd, get_fd_buf(fd, FD_BUF_RDONLY), BUFFER_SIZE);
 		else
 			rlen = ft_strlcpy(src, get_fd_buf(fd, FD_BUF_RDONLY), BUFFER_SIZE + 1);
 		if (BUFFER_SIZE == 0 || rlen < 0)
 			break ;
-		set_fd_buf(fd, ft_strchr(src, '\n'), rlen);
+		set_fd_buf(fd, ft_memchr(src, '\n', rlen), rlen);
 		res = join_res(&res, src);
 		if (res == NULL)
 			break ;
-		if (ft_strchr(get_fd_buf(fd, FD_BUF_RDONLY), '\n') || rlen == 0)
+		if (ft_memchr(get_fd_buf(fd, FD_BUF_RDONLY), '\n', rlen) || rlen == 0)
 			return (res);
 	}
 	if (res)
